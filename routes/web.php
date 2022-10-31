@@ -1,60 +1,54 @@
 <?php
-
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
-
 use App\Models\Category;
-
-
 use App\Models\User;
-
 /*
 |--------------------------------------------------------------------------
-@@ -18,45 +16,42 @@
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('home', [
         "title" => "Home"
-    
     ]);
 });
-
 Route::get('/about', function () {
     return view('about', [
-
-        "name" => "Linggih Kusumah Dilagga",
-        "email" => "Galihk250@gmail.com",
-        "image" => "profile.jpeg"
+        "title" => "About",
+        "name" => "Fikri",
+        "email" => "203040001@mail.unpas.ac.id",
+        "image" => "Profil Fikri.jpg"
     ]);
 });
-
 Route::get('/blog', [PostController::class, 'index']);
 Route::get('posts/{post:slug}', [PostController::class, 'show']);
-Route::get('posts/{post:slug}', [PostController::class, 'show']);
-
-Route::get('/categories', function() {
+Route::get('/categories', function () {
     return view('categories', [
         'title' => 'Post Categories',
+        'active' => 'categories',
         'categories' => Category::all()
     ]);
 });
 
-
-Route::get('/categories/{category:slug}', function(Category $category) {
+Route::get('/categories/{category:slug}', function (Category $category) {
     return view('posts', [
-        'title' => "Post By Category :$category->name",
+        'title' => "Post by Category : $category->name",
+        'active' => 'categories',
         'posts' => $category->posts->load('category', 'author')
-
     ]);
 });
 
-Route::get('/authors/{author:username}', function(User $author) {
+Route::get('/authors/{author:username}', function (User $author) {
     return view('posts', [
-        'title' => 'post By Author : ',
-        'posts' => $author->posts->load('category','author'),
+        'title' => "Post By Author : $author->name",
+        'active' => 'categories',
+        'posts' => $author->posts->load('category', 'author')
     ]);
 });
