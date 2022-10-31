@@ -1,28 +1,44 @@
 <?php
-namespace Database\Factories;
-use Illuminate\Database\Eloquent\Factories\Factory;
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
- */
-class PostFactory extends Factory
+namespace App\Models;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+class Post extends Model
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition()
+    use HasFactory;
+    //protected $fillable = ['title', 'excerpt', 'body'];
+    protected $guarded = ['id'];
+    protected $with = ['category', 'author'];
+
+    public function scopeFilter($query, array $filters)
     {
-        return [
-            'title' => $this->faker->sentence(mt_rand(2, 8)),
-            'slug' => $this->faker->slug(),
-            'excerpt' => $this->faker->paragraph(),
-            // 'body' => '<p>' . implode('</p><p>',$this->faker->paragraphs(mt_rand(5, 10))) . '</p>',
-            'body' => collect($this->faker->paragraphs(mt_rand(5, 10)))
-                ->map(fn ($p) => "<p>$p</p>")
-                ->implode(''),
-            'user_id' => mt_rand(1, 3),
-            'category_id' => mt_rand(1, 2)
-        ];
+        $query->when($filters['search'] ?? false, function ($query, $search) {
+            return $query->where('title', 'like', '%' . $search . '%')
+                ->orWhere('body', 'like', '%' . $search . '%');
+        });
+
+        $query->when($filters['category'] ?? false, function ($query, $category) {
+            return $query->whereHas('category', function ($query) use ($category) {
+                $query->where('slug', $category);
+            });
+        });
+
+        $query->when(
+            $filters['author'] ?? false,
+            fn ($query, $author) =>
+            $query->whereHas(
+                'author',
+                fn ($query) =>
+                $query->where('username', $author)
+            )
+        );
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+    public function author()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
