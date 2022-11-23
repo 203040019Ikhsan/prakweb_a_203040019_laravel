@@ -14,11 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // User::create([
-        //     'name' => 'Ikhsan Ardiansyah',
-        //     'email' => 'Ikhsan@gmail.com',
-        //     'password' => bcrypt('12345')
-        // ]);
+        User::create([
+            'name' => 'Ikhsan Ardiansyah',
+            'username' => 'Ikhsan Ardiansyah',
+            'email' => 'Ikhsan@gmail.com',
+            'password' => bcrypt('12345')
+        ]);
+
         // User::create([
         //     'name' => 'Doddy',
         //     'email' => 'doddy@gmail.com',
@@ -29,12 +31,11 @@ class DatabaseSeeder extends Seeder
             'name' => 'Web Programming',
             'slug' => 'web-programming',
         ]);
-
         Category::create([
             'name' => 'Web Design',
             'slug' => 'Web-design',
         ]);
-
+        
         Category::create([
             'name' => 'Personal',
             'slug' => 'personal',
